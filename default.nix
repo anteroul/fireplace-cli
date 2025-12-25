@@ -8,7 +8,9 @@ pkgs.stdenv.mkDerivation {
   buildInputs = [pkgs.ncurses];
 
   buildPhase = ''
-    gcc -O2 -o fireplace main.c -lncursesw
+    gcc -Wall -Wextra -std=c11 \
+    main.c terminfo.c \
+    -lncursesw -o fireplace
   '';
 
   installPhase = ''

@@ -1,8 +1,13 @@
+#include "terminfo.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <time.h>
 #include <unistd.h>
-#include <curses.h>
+#ifdef _WIN32
+#include <curses.h>   /* PDCurses */
+#else
+#include <curses.h>   /* ncurses */
+#endif
 
 #define FRAME_DELAY 128000
 #define FIRE_HEIGHT 32
@@ -46,6 +51,11 @@ int main(void)
     nodelay(stdscr, TRUE);
     keypad(stdscr, TRUE);
 
+    mvprintw(0, 2, "Terminal: %s | Shell: %s",
+         detect_terminal(),
+         detect_shell());
+    refresh();
+
     if (!has_colors()) {
         endwin();
         fprintf(stderr, "Terminal has no color support.\n");
@@ -56,9 +66,11 @@ int main(void)
     use_default_colors();
     init_fire_colors();
 
+    // Set terminal window size
     int term_h, term_w;
     getmaxyx(stdscr, term_h, term_w);
-    if (term_w > 512) term_w = 512;
+    if (term_w > 90) term_w = 90;
+    if (term_h > 20) term_h = 20;
 
     // Clear fire buffer
     for (int y = 0; y < FIRE_HEIGHT; y++)
