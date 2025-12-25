@@ -1,7 +1,7 @@
 {pkgs ? import <nixpkgs> {}}:
 pkgs.stdenv.mkDerivation {
   pname = "fireplace";
-  version = "1.0";
+  version = "1.1";
 
   src = ./.;
 

@@ -1,17 +1,21 @@
+#define _POSIX_C_SOURCE 200809L
+
 #include "terminfo.h"
 #include <stdlib.h>
 #include <stdio.h>
-#include <time.h>
-#include <unistd.h>
 #ifdef _WIN32
 #include <curses.h>   /* PDCurses */
 #else
 #include <curses.h>   /* ncurses */
 #endif
+#include <time.h>
 
 #define FRAME_DELAY 128000
 #define FIRE_HEIGHT 32
 #define MAX_HEAT    23
+
+#define PAIR_BRIGHT_RED 20
+
 
 int fire[FIRE_HEIGHT][512];
 enum { MODE_BASIC, MODE_256 };
@@ -125,8 +129,15 @@ int main(void)
         for (int x = 0; x < term_w; x++)
             mvaddch(term_h - 1, x, '=');
 
+        struct timespec ts;
+        ts.tv_sec = 0;
+        ts.tv_nsec = FRAME_DELAY * 1000; // microseconds → nanoseconds
+        nanosleep(&ts, NULL);
+        
+        mvprintw(0, 2, "Terminal: %s | Shell: %s",
+            detect_terminal(),
+            detect_shell());
         refresh();
-        usleep(FRAME_DELAY);
 
         if (getch() == 'q')
             break;
